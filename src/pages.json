@@ -1,0 +1,47 @@
+{
+	"pages": [
+		{
+			"path": "pages/games/list",
+			"style": {
+				"navigationBarTitleText": "小游戏"
+			}
+		},
+		{
+			"path": "pages/coupon/list",
+			"style": {
+				"navigationBarTitleText": "优惠劵列表",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/home/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "ggggfg",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#007AFF",
+		"borderStyle": "black",
+		"backgroundColor": "#F8F8F8",
+		"list": [{
+				"pagePath": "pages/games/list",
+				"iconPath": "static/template.png",
+				"selectedIconPath": "static/templateHL.png",
+				"text": "小游戏"
+			},
+			{
+				"pagePath": "pages/coupon/list",
+				"iconPath": "static/extui.png",
+				"selectedIconPath": "static/extuiHL.png",
+				"text": "优惠劵"
+			}]
+	}
+}
