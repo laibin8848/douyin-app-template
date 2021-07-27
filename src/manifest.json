@@ -68,6 +68,14 @@
     },
     "mp-toutiao" : {
         "appid" : "tte033968e7f0be10201",
+		"navigateToMiniProgramAppIdList": [
+			"tt6e6718daf14de0aa",
+			"tt95d6e36b0afcf314",
+			"tt65e7135afacd0320",
+			"ttbceeca5323c481f2",
+			"tt2a5d5ce0b577716b",
+			"tt33a94514ac83c9e2" 
+		],
         "usingComponents" : true
     },
     "mp-qq" : {

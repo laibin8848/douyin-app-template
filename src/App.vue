@@ -7,14 +7,7 @@
 				provider: 'toutiao',
 				success: function(loginRes) {
 					console.log('login', loginRes);
-					uni.getUserInfo({
-						success(res) {
-							console.log('getUserInfo', res)
-							uni.setStorageSync('authInfo', res.userInfo);
-							if (res) {
-							}
-						}
-					})
+					
 				}
 			})
 		},
