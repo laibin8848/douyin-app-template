@@ -10,12 +10,12 @@
 					
 				}
 			})
-		},
-		onShow: function() {
-			console.log('App Show')
-		},
-		onHide: function() {
-			console.log('App Hide')
+
+			//clear flag
+			uni.setStorage({
+				key: 'show_coupon_popup',
+				data: ''
+			})
 		}
 	}
 </script>

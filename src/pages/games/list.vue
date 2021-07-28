@@ -1,5 +1,18 @@
 <template>
 	<view>
+		<view class="ad_swiper_wrapper">
+			<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000" :duration="500">
+				<swiper-item>
+					<view class="swiper-item uni-bg-red">A</view>
+				</swiper-item>
+				<swiper-item>
+					<view class="swiper-item uni-bg-green">B</view>
+				</swiper-item>
+				<swiper-item>
+					<view class="swiper-item uni-bg-blue">C</view>
+				</swiper-item>
+			</swiper>
+		</view>
 		<view class="btn_list">
 			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt6e6718daf14de0aa')">斗兽棋大战</button>
 			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt95d6e36b0afcf314')">水枪奇兵</button>
@@ -37,4 +50,17 @@
 	width: 90%;margin: 0 auto;
 }
 .btn_item { margin-bottom: 10px; }
+.swiper {
+	height: 300rpx;
+}
+.swiper-item {
+	display: block;
+	height: 300rpx;
+	line-height: 300rpx;
+	text-align: center;
+}
+.ad_swiper_wrapper {
+	width: 90%;
+	margin: 0 auto;
+}
 </style>

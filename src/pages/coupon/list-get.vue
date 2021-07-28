@@ -27,7 +27,7 @@
 					<text class="_small_font">2021/08/01到期</text>
 				</view>
 				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini">去使用</button>
+					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
 				</view>
 			</view>
 			<view class="list_item">
@@ -40,7 +40,7 @@
 					<text class="_small_font">2021/08/01到期</text>
 				</view>
 				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini">去使用</button>
+					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
 				</view>
 			</view>
 			<view class="list_item">
@@ -53,7 +53,7 @@
 					<text class="_small_font">2021/08/01到期</text>
 				</view>
 				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini">去使用</button>
+					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
 				</view>
 			</view>
 			<view class="list_item">
@@ -66,7 +66,7 @@
 					<text class="_small_font">2021/08/01到期</text>
 				</view>
 				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini">去使用</button>
+					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
 				</view>
 			</view>
 			<view class="list_item">
@@ -79,7 +79,7 @@
 					<text class="_small_font">2021/08/01到期</text>
 				</view>
 				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini">去使用</button>
+					<button type="primary" :disabled="true" plain="true" size="mini" @click="goDetail">已使用</button>
 				</view>
 			</view>
 		</view>
@@ -106,6 +106,11 @@
 			})
 		},
 		methods: {
+			goDetail() {
+				uni.navigateTo({
+					url: '/pages/coupon/detail'
+				})
+			}
 		}
 	}
 </script>

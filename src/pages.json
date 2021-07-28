@@ -1,7 +1,7 @@
 {
 	"pages": [
 		{
-			"path": "pages/coupon/list",
+			"path": "pages/home/index",
 			"style": {
 				"navigationBarTitleText": "小游戏"
 			}
@@ -28,11 +28,18 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "我的"
+				"navigationBarTitleText": "门店生活圈"
+			}
+		},
+		{
+			"path": "pages/enterprise/coupon",
+			"style": {
+				"navigationBarTitleText": "xxxxx"
 			}
 		}
 	],
 	"globalStyle": {
+		// "navigationStyle": "custom",
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "ggggfg",
 		"navigationBarBackgroundColor": "#F8F8F8",
@@ -44,7 +51,7 @@
 		"borderStyle": "black",
 		"backgroundColor": "#F8F8F8",
 		"list": [{
-				"pagePath": "pages/coupon/list",
+				"pagePath": "pages/home/index",
 				"iconPath": "static/template.png",
 				"selectedIconPath": "static/templateHL.png",
 				"text": "首页"
