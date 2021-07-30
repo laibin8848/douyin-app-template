@@ -9,6 +9,7 @@
 
 <script>
 	export default {
+		name: 'cus-popup',
 		data() {
 			return {
                 show: false

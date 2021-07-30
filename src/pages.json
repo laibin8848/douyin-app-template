@@ -3,7 +3,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "小游戏"
+				"navigationBarTitleText": "领劵首页"
 			}
 		},
 		{
@@ -32,34 +32,47 @@
 			}
 		},
 		{
-			"path": "pages/enterprise/coupon",
-			"style": {
-				"navigationBarTitleText": "xxxxx"
-			}
+			"path": "pages/enterprise/coupon"
 		}
 	],
 	"globalStyle": {
-		// "navigationStyle": "custom",
+		"navigationStyle": "custom",
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "ggggfg",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
+	"condition": {
+		"current": 0,
+		"list": [{
+				"name": "coupon_not_get",
+				"path": "pages/home/index",
+				"query": "status=1"
+			},{
+				"name": "coupon_get",
+				"path": "pages/home/index",
+				"query": "status=2"
+			}
+		]
+	},
 	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
+		"selectedColor": "#FFFFFF",
+		"color": "#A4A6AA",
 		"borderStyle": "black",
-		"backgroundColor": "#F8F8F8",
+		"backgroundColor": "#2B2E34",
+		"iconWidth": "16px",
+		"height": "80px",
+		"fontSize": "36px",
 		"list": [{
 				"pagePath": "pages/home/index",
-				"iconPath": "static/template.png",
-				"selectedIconPath": "static/templateHL.png",
-				"text": "首页"
+				"iconPath": "static/icon_home_nor.png",
+				"selectedIconPath": "static/icon_home_sel.png",
+				"text": "领劵首页"
 			},
 			{
 				"pagePath": "pages/coupon/list-get",
-				"iconPath": "static/extui.png",
-				"selectedIconPath": "static/extuiHL.png",
+				"iconPath": "static/icon_my card_nor.png",
+				"selectedIconPath": "static/icon_my card_sel.png",
 				"text": "我的卡劵"
 			}]
 	}

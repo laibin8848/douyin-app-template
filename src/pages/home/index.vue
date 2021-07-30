@@ -1,48 +1,89 @@
 <template>
 	<view>
-		<view class="ad_swiper_wrapper">
-			<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000" :duration="500">
-				<swiper-item>
-					<view class="swiper-item uni-bg-red">A</view>
-				</swiper-item>
-				<swiper-item>
-					<view class="swiper-item uni-bg-green">B</view>
-				</swiper-item>
-				<swiper-item>
-					<view class="swiper-item uni-bg-blue">C</view>
-				</swiper-item>
-			</swiper>
-		</view>
-		<view class="__title">
-			<text>小游戏</text>
-		</view>
-		<view class="btn_list">
-			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt6e6718daf14de0aa')">斗兽棋大战</button>
-			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt95d6e36b0afcf314')">水枪奇兵</button>
-			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt65e7135afacd0320')">摩托车狂飙</button>
-			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('ttbceeca5323c481f2')">全民枪神边境王者</button>
-			<button class="btn_item" type="primary" plain="true" @click="goMiniApp('tt2a5d5ce0b577716b')">斗兽棋123</button>
-			<button type="primary" plain="true" @click="goMiniApp('tt33a94514ac83c9e2')">贪吃蛇</button>
-		</view>
-		<popup ref="popup">
-			<view style="width: 80%;margin: 0 auto;">
-			<button type="primary" plain="true" @click="getCoupon">
-				马上领取
-			</button>
+		<cusNav title="领劵首页" />
+		<view class="main_bg_con">
+			<view class="ad_swiper_wrapper">
+				<swiper class="swiper" circular :indicator-dots="true" :autoplay="true" :interval="2000" :duration="500">
+					<swiper-item>
+						<view class="swiper-item uni-bg-red">A</view>
+					</swiper-item>
+					<swiper-item>
+						<view class="swiper-item uni-bg-green">B</view>
+					</swiper-item>
+					<swiper-item>
+						<view class="swiper-item uni-bg-blue">C</view>
+					</swiper-item>
+				</swiper>
 			</view>
-		</popup>
+			<view class="__title">
+				<text>小游戏</text>
+			</view>
+			<view class="btn_list">
+				<view class="btn_item" :key="item.appid" v-for="item in gameList" @click="goMiniApp(item.appid)">
+					<view class="desc">
+						<text>{{item.name}}</text>
+						<text>在线玩家：{{item.users}}</text>
+					</view>
+				</view>
+			</view>
+			<popup ref="popup">
+				<view style="width: 80%;margin: 0 auto;">
+				<button type="primary" plain="true" @click="getCoupon">
+					马上领取
+				</button>
+				</view>
+			</popup>
+		</view>
 	</view>
 </template>
 
 <script>
 	import popup from '@/components/popup.vue'
+	import cusNav from '@/components/nav.vue'
+
 	export default {
 		components: {
-			popup
+			popup,
+			cusNav
 		},
 		data() {
 			return {
+				gameList: [
+					{
+						appid: 'tt2dfc5b41b2d618ae',
+						name: '勇者历险记',
+						users: 106
+					},
+					{
+						appid: 'tt95d6e36b0afcf314',
+						name: '水枪奇兵',
+						users: 200
+					},
+					{
+						appid: 'tt65e7135afacd0320',
+						name: '摩托车狂飙',
+						users: 600
+					},
+					{
+						appid: 'tte9589fe57672f68b',
+						name: '我太难了',
+						users: 1000
+					},
+					{
+						appid: 'tt2a5d5ce0b577716b',
+						name: '斗兽棋123',
+						users: 880
+					},
+					{
+						appid: 'tt33a94514ac83c9e2',
+						name: '贪吃蛇',
+						users: 690
+					}
+				]
 			}
+		},
+		onShow() {
+			this.gameList.map(item => item.users++)
 		},
 		onLoad(options) {
 			if(options.status == 2) {
@@ -89,8 +130,26 @@
 <style>
 .btn_list {
 	width: 90%;margin: 0 auto;
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
 }
-.btn_item { margin-bottom: 10px; }
+.btn_item { 
+	margin-bottom: 10px;
+	width: 48%;
+	height: 100px;
+	background: cornflowerblue;
+	position: relative;
+	font-size: 12px;
+ }
+.btn_item .desc {
+	position:absolute;
+	left: 10px;
+	bottom: 10px;
+	display: flex;
+	flex-direction: column;
+	color: #ffffff;
+}
 .swiper {
 	height: 300rpx;
 }
@@ -108,23 +167,6 @@
 	width: 90%;
 	margin: 20rpx auto 20rpx auto;
 	font-size: 24rpx;
-}
-.top_layer {
-	width: 100vw;
-	height: 200px;
-	position:fixed;
-	top: 100px;
-	left: 0;
-	z-index: 998;
-	text-align: center;
-}
-.top_layer_mask {
-	width: 100vw;
-	height: 100%;
-	position:fixed;
-	top: 0;
-	left: 0;
-	background: rgb(0, 0, 0, 0.8);
-	z-index: 996;
+	color: #ffffff;
 }
 </style>

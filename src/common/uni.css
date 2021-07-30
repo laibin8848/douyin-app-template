@@ -1456,3 +1456,8 @@ radio-group label, checkbox-group label{
 .left-win-active text{
 	color: #007AFF !important;
 }
+.main_bg_con {
+	background: #243962;
+	min-height: calc(100vh - 90px);
+	padding-top: 20px;
+}

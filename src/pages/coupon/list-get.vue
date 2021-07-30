@@ -1,85 +1,49 @@
 <template>
 	<view>
-		<view class="user_info">
-			<view><image class="image" mode="widthFix" :src="avatarUrl" /></view>
-			<view><text>{{nickname}}</text></view>
-		</view>
-		<view class="tabs_con">
-			<view class="__tabs">
-				全部
-				<text class="uni-badge">100</text>
-			</view>
-			<view class="__tabs">未使用
-				<text class="uni-badge">10</text></view>
-			<view class="__tabs">已使用
-				<text class="uni-badge">50</text></view>
-			<view class="__tabs">已过期
-				<text class="uni-badge">1</text></view>
-		</view>
-		<view class="coupon_list">
-			<view class="list_item">
-				<view class="__item item_p">
-					<text class="_big_font"><text class="_small_font">¥</text>10</text>
-					<text class="_small_font">满10可用</text>
+		<cusNav title="我的卡劵" height="240px">
+			<view class="user_info">
+				<view class="face_name">
+					<image class="image" mode="widthFix" :src="avatarUrl" />
+					<text>{{nickname}}</text>
 				</view>
-				<view class="__item item_d">
-					<text class="_big_font">来客客立减券</text>
-					<text class="_small_font">2021/08/01到期</text>
-				</view>
-				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
+				<view class="tabs_con">
+					<view class="__tabs">
+						全部
+						<text class="uni-badge">100+</text>
+					</view>
+					<view class="__tabs __active">未使用
+						<text class="uni-badge">10</text></view>
+					<view class="__tabs">已使用
+						<text class="uni-badge">50</text></view>
+					<view class="__tabs">已过期
+						<text class="uni-badge">1</text></view>
 				</view>
 			</view>
-			<view class="list_item">
-				<view class="__item item_p">
-					<text class="_big_font"><text class="_small_font">¥</text>10</text>
-					<text class="_small_font">满10可用</text>
-				</view>
-				<view class="__item item_d">
-					<text class="_big_font">来客客立减券</text>
-					<text class="_small_font">2021/08/01到期</text>
-				</view>
-				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
-				</view>
-			</view>
-			<view class="list_item">
-				<view class="__item item_p">
-					<text class="_big_font"><text class="_small_font">¥</text>10</text>
-					<text class="_small_font">满10可用</text>
-				</view>
-				<view class="__item item_d">
-					<text class="_big_font">来客客立减券</text>
-					<text class="_small_font">2021/08/01到期</text>
-				</view>
-				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
-				</view>
-			</view>
-			<view class="list_item">
-				<view class="__item item_p">
-					<text class="_big_font"><text class="_small_font">¥</text>10</text>
-					<text class="_small_font">满10可用</text>
-				</view>
-				<view class="__item item_d">
-					<text class="_big_font">来客客立减券</text>
-					<text class="_small_font">2021/08/01到期</text>
-				</view>
-				<view class="__item item_b">
-					<button type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
-				</view>
-			</view>
-			<view class="list_item">
-				<view class="__item item_p">
-					<text class="_big_font"><text class="_small_font">¥</text>10</text>
-					<text class="_small_font">满10可用</text>
-				</view>
-				<view class="__item item_d">
-					<text class="_big_font">来客客立减券</text>
-					<text class="_small_font">2021/08/01到期</text>
-				</view>
-				<view class="__item item_b">
-					<button type="primary" :disabled="true" plain="true" size="mini" @click="goDetail">已使用</button>
+		</cusNav>
+		<view class="main_bg_con">
+			<view class="coupon_list">
+				<view class="list_item_wrapper" v-for="(item, index) in list" :key="item.id">
+					<view class="list_item">
+						<view class="__item item_p color_1">
+							<text class="_big_b_font"><text class="_small_s_font">¥</text>{{item.price}}</text>
+						</view>
+						<view class="__item item_d">
+							<text class="_big_font color_2">{{item.title}}</text>
+							<text class="_small_font color_1">{{item.rule}}</text>
+							<text class="_small_font color_3">{{item.time}}</text>
+						</view>
+						<view class="__item item_b">
+							<button :disabled="item.disabled" :class="{'__my_btn': true,'__my_btn_narmal': !item.disabled, '__my_btn_disabled': item.disabled}" type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
+						</view>
+					</view>
+					<view class="__rule">
+						<view class="__rule_title" @click="list[index].showrule = !list[index].showrule">
+							<text class="flex_1">满足以下条件可用</text>
+							<text :class="{'arrow': true, 'arrow_to_up': item.showrule, 'arrow_to_down': !item.showrule}"></text>
+						</view>
+						<view v-show="item.showrule" class="_rule_text" v-html="item.desc">
+						</view>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -87,11 +51,38 @@
 </template>
 
 <script>
+	import cusNav from '@/components/nav.vue'
+
 	export default {
+		components: {
+			cusNav
+		},
 		data() {
 			return {
 				nickname: '',
-				avatarUrl: ''
+				avatarUrl: '',
+				list: [
+					{
+						id: 1,
+						price: 10,
+						title: '来客客立减券',
+						rule: '满10可用',
+						time: '2021/08/01到期',
+						desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
+						showrule: false,
+						disabled: false
+					},
+					{
+						id: 2,
+						price: 10,
+						title: '来客客立减券',
+						rule: '满10可用',
+						time: '2021/08/01到期',
+						desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
+						showrule: false,
+						disabled: true
+					}
+				]
 			}
 		},
 		onLoad() {
@@ -116,17 +107,50 @@
 </script>
 
 <style>
+	.flex_1 { flex: 1; }
+	.__rule_title {
+		display: flex;
+		align-items: center;
+		color: #999;
+	}
+	._rule_text {
+		padding: 10px 0;
+	}
+	.arrow {
+		border: solid #999;
+		border-width: 0 1px 1px 0;
+		display: inline-block;
+		padding: 3px;
+		font-size: 12px;
+		font-weight: bold;
+	}
+	.arrow_to_down {
+		 transform: rotate(45deg);
+  		-webkit-transform: rotate(45deg);
+	}
+	.arrow_to_up {
+		 transform: rotate(225deg);
+  		-webkit-transform: rotate(225deg);
+	}
 	.user_info {
 		width: 100%;
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		margin: 50rpx 0 50rpx 0;
+		position:absolute;
+		bottom: 0;
 	}
-	.image {
-		width: 150rpx;
-		height: 150rpx;
-		border-radius: 100rpx;
+	.face_name {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-left: 60rpx;
+		color: #ffffff;
+		margin-bottom: 60rpx;
+	}
+	.face_name .image {
+		width: 40px;
+		height: 40px;
+		border-radius: 36px;
+		border: 2px #ffffff solid;
+		margin-right: 20rpx;
 	}
 	.tabs_con {
 		width: 90%;
@@ -134,24 +158,45 @@
 		justify-content: space-around;
 		flex-direction: row;
 		margin: 0 auto;
+		color: #ffffff;
+		font-size: 32rpx;
 	}
 	.__tabs {
 		position: relative;
+		line-height: 28px;
+	}
+	.__active {
+		border-bottom: 3px #F54F1E solid;
 	}
 	.__tabs .uni-badge {
 		position:absolute;
 		top: -10px;
 		right: -20px;
-		background: deepskyblue;
+		background: #F25643;
+		color: #ffffff;
+		font-size: 24rpx;
 	}
 	.coupon_list {
 		width: 90%;
 		margin: 0 auto;
 	}
+	.list_item_wrapper {
+		margin-bottom: 10px;
+		background: #FFFFFF;
+		border-radius: 8px;
+		height: auto;
+	}
+	.list_item_wrapper .__rule {
+		border-top: 1px #E5E5E5 dashed;
+		color: #666666;
+		font-size: 12px;
+		font-weight: normal;
+		background: #FCFCFC;
+		padding: 16px;
+		border-radius: 8px;
+	}
 	.list_item {
 		width: 100%;
-		background: #f3f0f0;
-		margin-top: 10px;
 		display: flex;
 		flex-direction: row;
 	}
@@ -174,8 +219,34 @@
 	._big_font {
 		font-size: 20px;
 	}
-	._small_font {
-		font-size: 10px;
+	._big_b_font {
+		font-size: 42px;
+	}
+	._small_s_font {
+		font-size: 22px;
 		color: #666;
+	}
+	._small_font {
+		font-size: 12px;
+		color: #666;
+	}
+	.color_1 {
+		color: #FF522A;
+	}
+	.color_2 {
+		color: #333333;
+	}
+	.color_3 {
+		color: #666666;
+	}
+	.__my_btn {
+		border-radius: 4px;
+		margin-top: 20px;
+	}
+	.__my_btn_narmal {
+		background-image: linear-gradient(270deg, #FF557A 0%, #FF5828 100%);
+	}
+	.__my_btn_disabled {
+		background: #D3D3D3;
 	}
 </style>
