@@ -66,8 +66,14 @@ var dateUtils = {
 	}
 };
 
+function getToken() {
+	const token = uni.getStorageSync('access_token');
+	return token;
+};
+
 module.exports = {
 	formatTime: formatTime,
 	formatLocation: formatLocation,
-	dateUtils: dateUtils
+	dateUtils: dateUtils,
+	getToken: getToken
 }

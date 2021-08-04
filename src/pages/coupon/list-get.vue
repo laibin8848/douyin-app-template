@@ -7,33 +7,33 @@
 					<text>{{nickname}}</text>
 				</view>
 				<view class="tabs_con">
-					<view class="__tabs">
+					<view @click="curStatus = ''" :class="{'__tabs': true, '__active': curStatus == ''}">
 						全部
-						<text class="uni-badge">100+</text>
+						<text class="uni-badge">{{counts.all}}</text>
 					</view>
-					<view class="__tabs __active">未使用
-						<text class="uni-badge">10</text></view>
-					<view class="__tabs">已使用
-						<text class="uni-badge">50</text></view>
-					<view class="__tabs">已过期
-						<text class="uni-badge">1</text></view>
+					<view @click="curStatus = '0'" :class="{'__tabs': true, '__active': curStatus == '0'}">未使用<text class="uni-badge" v-if="counts.status0 > 0">{{counts.status0}}</text></view>
+					<view @click="curStatus = '1'" :class="{'__tabs': true, '__active': curStatus == '1'}">已使用<text class="uni-badge" v-if="counts.status1 > 0">{{counts.status1}}</text></view>
+					<view @click="curStatus = '2'" :class="{'__tabs': true, '__active': curStatus == '2'}">已过期<text class="uni-badge" v-if="counts.status2 > 0">{{counts.status2}}</text></view>
 				</view>
 			</view>
 		</cusNav>
 		<view class="main_bg_con">
 			<view class="coupon_list">
+				<view style="color: #fff;font-size: 12px;text-align: center;" v-if="list.length == 0">
+					暂无数据~
+				</view>
 				<view class="list_item_wrapper" v-for="(item, index) in list" :key="item.id">
-					<view class="list_item">
+					<view class="list_item" @click="goDetail(item)">
 						<view class="__item item_p color_1">
-							<text class="_big_b_font"><text class="_small_s_font">¥</text>{{item.price}}</text>
+							<text class="_big_b_font"><text class="_small_s_font">¥</text>{{item.faceValue}}</text>
 						</view>
 						<view class="__item item_d">
 							<text class="_big_font color_2">{{item.title}}</text>
-							<text class="_small_font color_1">{{item.rule}}</text>
-							<text class="_small_font color_3">{{item.time}}</text>
+							<text class="_small_font color_1">满{{item.threshold}}减{{item.faceValue}}</text>
+							<text class="_small_font color_3">{{formatTime(item.endTime)}} 到期</text>
 						</view>
 						<view class="__item item_b">
-							<button :disabled="item.disabled" :class="{'__my_btn': true,'__my_btn_narmal': !item.disabled, '__my_btn_disabled': item.disabled}" type="primary" plain="true" size="mini" @click="goDetail">去使用</button>
+							<button :disabled="item.status != 0" :class="{'__my_btn': true,'__my_btn_narmal': item.status == 0, '__my_btn_disabled': item.status != 0}" type="primary" plain="true" size="mini">去使用</button>
 						</view>
 					</view>
 					<view class="__rule">
@@ -41,8 +41,7 @@
 							<text class="flex_1">满足以下条件可用</text>
 							<text :class="{'arrow': true, 'arrow_to_up': item.showrule, 'arrow_to_down': !item.showrule}"></text>
 						</view>
-						<view v-show="item.showrule" class="_rule_text" v-html="item.desc">
-						</view>
+						<view v-show="item.showrule" class="_rule_text" v-html="item.description1"></view>
 					</view>
 				</view>
 			</view>
@@ -52,6 +51,8 @@
 
 <script>
 	import cusNav from '@/components/nav.vue'
+	import { couponMy, couponStatusCount } from '@/api'
+	import moment from 'moment'
 
 	export default {
 		components: {
@@ -61,27 +62,36 @@
 			return {
 				nickname: '',
 				avatarUrl: '',
+				counts: {
+					all: 0,
+					status0: 0,
+					status1: 0,
+					status2: 0
+				},
+				curStatus: '',
 				list: [
-					{
-						id: 1,
-						price: 10,
-						title: '来客客立减券',
-						rule: '满10可用',
-						time: '2021/08/01到期',
-						desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
-						showrule: false,
-						disabled: false
-					},
-					{
-						id: 2,
-						price: 10,
-						title: '来客客立减券',
-						rule: '满10可用',
-						time: '2021/08/01到期',
-						desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
-						showrule: false,
-						disabled: true
-					}
+					// {
+					// 	id: 1,
+					// 	price: 10,
+					// 	title: '来客客立减券',
+					// 	rule: '满10可用',
+					// 	time: '2021/08/01到期',
+					// 	desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
+					// 	showrule: false,
+					// 	disabled: false,
+					// 	couponId: '1420671457127989250'
+					// },
+					// {
+					// 	id: 2,
+					// 	price: 10,
+					// 	title: '来客客立减券',
+					// 	rule: '满10可用',
+					// 	time: '2021/08/01到期',
+					// 	desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
+					// 	showrule: false,
+					// 	disabled: true,
+					// 	couponId: '1420671457127989250'
+					// }
 				]
 			}
 		},
@@ -89,18 +99,51 @@
 			const _this = this
 			uni.getUserInfo({
 				success(res) {
+					console.log('getUserInfo', res)
 					if (res) {
 						_this.nickname = res.userInfo.nickName
 						_this.avatarUrl = res.userInfo.avatarUrl
 					}
 				}
 			})
+			this.getMyList()
+		},
+		onShow() {
+			this.fetchStatus()
+		},
+		watch: {
+			'curStatus': {
+				handler: function(val) {
+					this.getMyList()
+				}
+			}
 		},
 		methods: {
-			goDetail() {
-				uni.navigateTo({
-					url: '/pages/coupon/detail'
+			async fetchStatus() {
+				const status = await couponStatusCount()
+				this.counts.all = status.all
+				this.counts.status0 = status.status0
+				this.counts.status1 = status.status1
+				this.counts.status2 = status.status2
+			},
+			formatTime(time) {
+				return moment(time).format('YYYY-MM-DD')
+			},
+			getMyList() {
+				uni.showLoading({
+					title: '加载中……'
 				})
+				couponMy(this.curStatus, (res)=> {
+					uni.hideLoading()
+					res.data.result.records.map(item=> item.showrule = false)
+					this.list = res.data.result.records || []
+				})
+			},
+			goDetail(item) {
+				item.status == 0 && 
+					uni.navigateTo({
+						url: `/pages/coupon/detail?couponId=${item.id}`
+					})
 			}
 		}
 	}
@@ -212,6 +255,7 @@
 	}
 	.item_d {
 		flex: 1;
+		padding-left: 10px;
 	}
 	.item_b {
 		padding-right: 10px;

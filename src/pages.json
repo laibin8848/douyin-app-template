@@ -47,11 +47,11 @@
 		"list": [{
 				"name": "coupon_not_get",
 				"path": "pages/home/index",
-				"query": "status=1"
+				"query": "shopId=1&status=1"
 			},{
 				"name": "coupon_get",
 				"path": "pages/home/index",
-				"query": "status=2"
+				"query": "shopId=1&status=2"
 			}
 		]
 	},

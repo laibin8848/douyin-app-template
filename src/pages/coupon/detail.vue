@@ -1,35 +1,35 @@
 <template>
 	<view>
 		<cusNav title="我的卡劵" height="240px" :needback="true" />
-		<view class="main_bg_con">
+		<view class="main_bg_con" style="min-height: auto;">
 			<view class="qr_box">
 				<view class="qr_box_con">
 					<view class="title_box">
-						<text class="__main_title">10元立减券</text>
-						<text>唐宴酒家</text>
+						<text class="__main_title">{{couponObj.title || ''}}</text>
+						<text>满{{couponObj.threshold}}减{{couponObj.faceValue}}</text>
 					</view>
 					<view class="sp_border">
 						<view class="_right"></view>
 						<view class="_left"></view>
 					</view>
-					<view class="code_box">券码：0923-0399-9034</view>
+					<view class="code_box">券码：{{couponObj.qrCode || ''}}</view>
 					<view>
 						<canvas style="margin: 0 auto;width: 120px;height: 120px;" class='canvas' canvas-id="myQrcode"></canvas>
 					</view>
-					<view class="fit_bottom">可用时间：2021-09-23至2021-09-29</view>
+					<view class="fit_bottom">可用时间：{{formatTime(couponObj.startTime || '')}} 至 {{formatTime(couponObj.endTime || '')}}</view>
 				</view>
 			</view>
 			<view class="__bottom_desc">
 				<view class="_block">
 					<text class="__title">适用范围</text>
 					<text class="__con" style="border-bottom: 1px solid #F1F1F1;">
-						商品和限时超值购商品额外9折优惠。此优惠券可与店内活动优惠同享，不可与其他会员优惠券或其他优惠代码同享，不适用于购买减价商品。此优惠券限使用一次，自兑换之日起30天内有效。
+						{{couponObj.description2 || ''}}
 					</text>
 				</view>
 				<view class="_block">
 					<text class="__title">使用须知</text>
 					<text class="__con">
-						享整单双倍积分特惠。此欢迎礼券可与店内优惠同享，不可与其他会员优惠券以及其他优惠代码同享，周末不能使用，节假日不能使用，发票问题请咨询商家。
+						{{couponObj.description3 || ''}}
 					</text>
 				</view>
 			</view>
@@ -40,6 +40,9 @@
 <script>
 	import cusNav from '@/components/nav.vue'
 	import QRCode from '@/common/qrcode.js'
+	import { couponDetail, couponStatus } from '@/api'
+	import moment from 'moment'
+	let timmer = null
 
 	export default {
 		components: {
@@ -47,21 +50,55 @@
 		},
 		data() {
 			return {
+				couponId: null,
+				couponObj: null
 			}
 		},
-		onLoad() {
+		onLoad(options) {
+			this.couponId = options.couponId
+			timmer = setInterval(()=> {
+				couponStatus(this.couponObj.qrCode || '', (res)=> {
+					if(res.data.success == true) {
+						if(res.data.result != 0) {
+							clearInterval(timmer)
+							uni.showModal({
+								content: '优惠券核销成功！',
+								showCancel: false,
+								success: function () {
+									uni.switchTab({
+										url: '/pages/coupon/list-get'
+									})
+								}
+							})
+						}
+					}
+				})
+			}, 2000)
+		},
+		beforeDestroy() {
+			clearInterval(timmer)
 		},
 		mounted() {
-			new QRCode('myQrcode', {
-				text: "0923-0399-9034",
-				width: 120,
-				height: 120,
-				colorDark: "#333333",
-				colorLight: "#FFFFFF",
-				correctLevel: QRCode.CorrectLevel.H
+			uni.showLoading({
+				title: '加载中……'
+			})
+			couponDetail(this.couponId, (res)=> {
+				uni.hideLoading()
+				this.couponObj = res.data.result
+				new QRCode('myQrcode', {
+					text: this.couponObj.qrCode || '',
+					width: 120,
+					height: 120,
+					colorDark: "#333333",
+					colorLight: "#FFFFFF",
+					correctLevel: QRCode.CorrectLevel.H
+				})
 			})
 		},
 		methods: {
+			formatTime(time) {
+				return moment(time).format('YYYY-MM-DD')
+			}
 		}
 	}
 </script>
@@ -72,7 +109,7 @@
 		height: auto;
 		z-index: 999;
 		position: absolute;
-		top: 100px;
+		top: 150px;
 	}
 	.qr_box_con {
 		width: 95%;
@@ -143,9 +180,9 @@
 	}
 	.__bottom_desc {
 		width: 100%;
-		height: 400px;
+		height: 260px;
 		background: #FFFFFF;
-		margin-top: 220px;
+		margin-top: 310px;
 	}
 	.__bottom_desc ._block {
 		padding: 10px;

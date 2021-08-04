@@ -1,4 +1,6 @@
 <script>
+	import { douyinAppletsLogin } from '@/api'
+
 	export default {
 		onLaunch: function(options) {
 			console.log('App Launch', options)
@@ -6,8 +8,23 @@
 			uni.login({
 				provider: 'toutiao',
 				success: function(loginRes) {
-					console.log('login', loginRes);
+					console.log('loginRes', loginRes)
 					
+					uni.getUserInfo({
+						success(res) {
+							//
+						}
+					})
+
+					douyinAppletsLogin({
+						'anonymousCode': loginRes.anonymousCode,
+						'code': loginRes.code
+					},(res) => {
+						uni.setStorage({
+							key: 'access_token',
+							data: res.data.result.token || ''
+						})
+					})
 				}
 			})
 
