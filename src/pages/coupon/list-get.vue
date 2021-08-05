@@ -69,30 +69,7 @@
 					status2: 0
 				},
 				curStatus: '',
-				list: [
-					// {
-					// 	id: 1,
-					// 	price: 10,
-					// 	title: '来客客立减券',
-					// 	rule: '满10可用',
-					// 	time: '2021/08/01到期',
-					// 	desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
-					// 	showrule: false,
-					// 	disabled: false,
-					// 	couponId: '1420671457127989250'
-					// },
-					// {
-					// 	id: 2,
-					// 	price: 10,
-					// 	title: '来客客立减券',
-					// 	rule: '满10可用',
-					// 	time: '2021/08/01到期',
-					// 	desc: '下单购买时，需同时加购2件适用商品，赠送产品不得高于购买产品价格，具体适用品类的商品请以门店售卖商品为准。',
-					// 	showrule: false,
-					// 	disabled: true,
-					// 	couponId: '1420671457127989250'
-					// }
-				]
+				list: []
 			}
 		},
 		onLoad() {
@@ -131,7 +108,7 @@
 			},
 			getMyList() {
 				uni.showLoading({
-					title: '加载中……'
+					title: '加载中…'
 				})
 				couponMy(this.curStatus, (res)=> {
 					uni.hideLoading()

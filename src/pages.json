@@ -67,7 +67,7 @@
 				"pagePath": "pages/home/index",
 				"iconPath": "static/icon_home_nor.png",
 				"selectedIconPath": "static/icon_home_sel.png",
-				"text": "领劵首页"
+				"text": "首页"
 			},
 			{
 				"pagePath": "pages/coupon/list-get",

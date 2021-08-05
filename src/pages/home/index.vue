@@ -1,9 +1,9 @@
 <template>
 	<view>
-		<cusNav title="领劵首页" />
+		<cusNav title="门店生活圈" />
 		<view class="main_bg_con">
 			<view class="ad_swiper_wrapper">
-				<image src="@/static/home/banner.png" style="width: 100%;" mode="widthFix" />
+				<image :src="banner" style="width: 100%;" mode="widthFix" />
 				<!-- <swiper class="swiper" circular :indicator-dots="false" :autoplay="true" :interval="2000" :duration="500">
 					<swiper-item>
 						<view class="swiper-item">
@@ -13,14 +13,27 @@
 				</swiper> -->
 			</view>
 			<view class="__title">
-				<text>小游戏</text>
+				<text>排队无聊，玩一玩</text>
 			</view>
 			<view class="btn_list">
-				<view class="btn_item" :key="item.appid" v-for="item in gameList" @click="goMiniApp(item.appid)">
+				<view class="btn_item" :key="item.appid" v-for="item in gameList1" @click="goMiniApp(item.appid)">
 					<image :src="item.gameImg" style="width: 100%;" mode="widthFix" />
 					<view class="desc">
 						<text>{{item.name}}</text>
-						<text class="_font_small">{{item.users}} 人在玩</text>
+						<!-- <text class="_font_small">{{item.users}} 人在玩</text> -->
+					</view>
+				</view>
+			</view>
+			<view class="banner2">
+				<image src="@/static/home/banner2.png" style="width: 100%;" mode="widthFix" />
+				<view class="btn" @click="$refs.popup.open()">立即领取</view>
+			</view>
+			<view class="btn_list">
+				<view class="btn_item" :key="item.appid" v-for="item in gameList2" @click="goMiniApp(item.appid)">
+					<image :src="item.gameImg" style="width: 100%;" mode="widthFix" />
+					<view class="desc">
+						<text>{{item.name}}</text>
+						<!-- <text class="_font_small">{{item.users}} 人在玩</text> -->
 					</view>
 				</view>
 			</view>
@@ -28,7 +41,7 @@
 				<view class="confirm_con">
 					<image src="@/static/confirmbox/get.png" style="width: 345px;" mode="widthFix" />
 					<image src="@/static/confirmbox/icon_close.png" @click="$refs.popup.close()" style="width:44px;" mode="widthFix" />
-					<view class="_confirm_title">{{shopname}}</view>
+					<view class="_confirm_title">{{shopname.substring(0,8)}}</view>
 					<view class="_confirm_main">
 						<view class="__tips">
 							<image src="@/static/confirmbox/icon_colck.png" style="width: 18px;vertical-align:middle;margin: -6px 6px 0 0;" mode="widthFix" />
@@ -53,6 +66,7 @@
 	import popup from '@/components/popup.vue'
 	import cusNav from '@/components/nav.vue'
 	import { couponList, couponGet, shopDetail } from '@/api'
+	import { IMGHOST as imageHost, IMGVER as imageVer } from '@/config'
 
 	export default {
 		components: {
@@ -61,45 +75,48 @@
 		},
 		data() {
 			return {
+				banner: `${imageHost}/banner.png?${imageVer}`,
 				shopname: '',
 				shopId: 1,
 				topCoupon: null,
-				gameList: [
+				gameList1: [
 					{
 						appid: 'tt2dfc5b41b2d618ae',
 						name: '勇者历险记',
 						users: 106,
-						gameImg: require('@/static/home/game2.png')
+						gameImg: `${imageHost}/game2.png?${imageVer}`
 					},
 					{
 						appid: 'tt95d6e36b0afcf314',
 						name: '水枪奇兵',
 						users: 200,
-						gameImg: require('@/static/home/game6.png')
+						gameImg: `${imageHost}/game6.png?${imageVer}`
 					},
 					{
 						appid: 'tt65e7135afacd0320',
 						name: '摩托车狂飙',
 						users: 600,
-						gameImg: require('@/static/home/game4.png')
-					},
+						gameImg: `${imageHost}/game4.png?${imageVer}`
+					}
+				],
+				gameList2: [
 					{
 						appid: 'tte9589fe57672f68b',
 						name: '我太难了',
 						users: 1000,
-						gameImg: require('@/static/home/game5.png')
+						gameImg: `${imageHost}/game5.png?${imageVer}`
 					},
 					{
 						appid: 'tt2a5d5ce0b577716b',
 						name: '斗兽棋123',
 						users: 880,
-						gameImg: require('@/static/home/game3.png')
+						gameImg: `${imageHost}/game3.png?${imageVer}`
 					},
 					{
 						appid: 'tt33a94514ac83c9e2',
 						name: '贪吃蛇',
 						users: 690,
-						gameImg: require('@/static/home/game1.png')
+						gameImg: `${imageHost}/game1.png?${imageVer}`
 					}
 				]
 			}
@@ -112,7 +129,7 @@
 				this.shopId = options.shopId
 			}
 			uni.showLoading({
-				title: '加载中……'
+				title: '加载中…'
 			})
 			// if(options.status == 2) {
 			// 	uni.redirectTo({
@@ -128,6 +145,10 @@
 			})
 			couponList(this.shopId,(res) => {
 				if(res.data.success == true) {
+					if(res.data.result == null) {
+						uni.hideLoading()
+						return
+					}
 					this.topCoupon = res.data.result
 					
 					const popupFlag = uni.getStorageSync('show_coupon_popup')
@@ -139,9 +160,6 @@
 			})
 		},
 		methods: {
-			showDialog() {
-
-			},
 			goMiniApp(appid) {
 				uni.navigateToMiniProgram({
 					appId: appid,
@@ -190,6 +208,26 @@
 	display: flex;
 	justify-content: space-around;
 	flex-wrap: wrap;
+}
+.banner2 {
+	width: 93%;
+	margin: 0 auto 20rpx auto;
+	text-align: center;
+	position: relative;
+}
+.banner2 .btn {
+	width: 80px;
+	height: 30px;
+	border-radius: 15px;
+	background-image: linear-gradient(270deg, #FF557A 0%, #FF5828 100%);
+	border-radius: 15.4px;
+	position: absolute;
+	right: 10px;
+	top: calc(50% - 15px);
+	font-size: 14px;
+	color: #ffffff;
+	text-align: center;
+	line-height: 30px;
 }
 .btn_item { 
 	width: 31%;

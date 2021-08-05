@@ -51,7 +51,11 @@
 		data() {
 			return {
 				couponId: null,
-				couponObj: null
+				couponObj: {
+					qrCode: '',
+					startTime: '',
+					endTime: ''
+				}
 			}
 		},
 		onLoad(options) {
@@ -62,7 +66,7 @@
 						if(res.data.result != 0) {
 							clearInterval(timmer)
 							uni.showModal({
-								content: '优惠券核销成功！',
+								content: res.data.result == 1 ? '优惠券核销成功！' : '已过期！',
 								showCancel: false,
 								success: function () {
 									uni.switchTab({
@@ -80,7 +84,7 @@
 		},
 		mounted() {
 			uni.showLoading({
-				title: '加载中……'
+				title: '加载中…'
 			})
 			couponDetail(this.couponId, (res)=> {
 				uni.hideLoading()

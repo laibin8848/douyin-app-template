@@ -1,63 +1,94 @@
 import { getToken } from '@/common/util'
-const apiRoot = 'https://kedoulai.gdii-yueyun.com/'
-//http://10.16.153.243:31023/
-//https://kedoulai.gdii-yueyun.com/
+import { APIHOST as apiRoot } from './config'
 
-export const couponMy = (status, cb) => {
+function uniGet (url, cb = null) {
     const token = getToken()
     return uni.request({
         method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/my?pageNo=1&pageSize=10&status=${status}`,
+        url: `${apiRoot}${url}`,
         header: {
             'X-Access-Token': token
         },
         success: (res) => {
-            cb(res)
+            console.log('uni-get-url', url)
+            console.log('uni-get-result', res.data)
+            if(res.data.code == 'E401') {
+                uni.hideLoading()
+                uni.login({
+                    provider: 'toutiao',
+                    success: function(loginRes) {
+                        douyinAppletsLogin({
+                            'anonymousCode': loginRes.anonymousCode,
+                            'code': loginRes.code
+                        },(res) => {
+                            uni.setStorage({
+                                key: 'access_token',
+                                data: res.data.result.token || ''
+                            })
+                            uni.reLaunch({
+                                url: '/pages/home/index'
+                            })
+                        })
+                    }
+                })
+                return
+            }
+            cb && cb(res)
+        },
+        error: (res) => {
+            console.log('uni-get-error', res)
         }
     })
+}
+
+function uniGetPromise (url) {
+    const token = getToken()
+    return uni.request({
+        method: 'GET',
+        url: `${apiRoot}${url}`,
+        header: {
+            'X-Access-Token': token
+        }
+    })
+}
+
+function uniPost (url, data = {}, cb = null) {
+    const token = getToken()
+    return uni.request({
+        method: 'POST',
+        url: `${apiRoot}${url}`,
+        data: data,
+        header: {
+            'X-Access-Token': token
+        },
+        success: (res) => {
+            console.log('uni-post-url', url)
+            console.log('uni-post-result', res.data)
+            cb && cb(res)
+        },
+        error: (res) => {
+            console.log('uni-post-error', res)
+        }
+    })
+}
+
+export const couponMy = (status, cb) => {
+    uniGet(`/customer/coupon/customer/my?pageNo=1&pageSize=10&status=${status}`, cb)
 }
 
 export const couponStatus = (code, cb) => {
-    const token = getToken()
-    return uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/status/${code}`,
-        header: {
-            'X-Access-Token': token
-        },
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniGet(`/customer/coupon/customer/status/${code}`, cb)
 }
 
 export const shopDetail = (shopId, cb) => {
-    const token = getToken()
-    return uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/shop-detail/${shopId}`,
-        header: {
-            'X-Access-Token': token
-        },
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniGet(`/customer/coupon/customer/shop-detail/${shopId}`, cb)
 }
 
 export const douyinAppletsLogin = (data, cb) => {
-    uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/login/douyinAppletsLogin?anonymousCode=${data.anonymousCode}&code=${data.code}`,
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniGet(`/customer/login/douyinAppletsLogin?anonymousCode=${data.anonymousCode}&code=${data.code}`, cb)
 }
 
 export const couponStatusCount = async () => {
-    const token = getToken()
-
     const status = {
         all: 0,
         status0: 0,
@@ -65,76 +96,32 @@ export const couponStatusCount = async () => {
         status2: 0
     }
 
-    const [error, res] = await uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/my?pageNo=1&pageSize=1&status=0`,
-        header: {
-            'X-Access-Token': token
-        }
+    const arrStatus = [0, 1, 2]
+    const promises = []
+    arrStatus.map(item=> {
+        promises.push(new Promise(reslove=> {
+            uniGetPromise(`/customer/coupon/customer/my?pageNo=1&pageSize=1&status=${item}`).then(([err, res])=> {
+                reslove(res.data.result.total)
+            })
+        }))
     })
-    status.status0 = res.data.result.total
-
-    const [error1, res1] = await uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/my?pageNo=1&pageSize=1&status=1`,
-        header: {
-            'X-Access-Token': token
-        }
-    })
-    status.status1 = res1.data.result.total
-
-    const [error2, res2] = await uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/my?pageNo=1&pageSize=1&status=2`,
-        header: {
-            'X-Access-Token': token
-        }
-    })
-    status.status2 = res2.data.result.total
-
-    status.all = status.status0 + status.status1 + status.status2
+    const arr = await Promise.all(promises)
+    status.all = arr.reduce((pre, next) => { return next + pre })
+    status.status0 = arr[0]
+    status.status1 = arr[1]
+    status.status2 = arr[2]
+    
     return status
 }
 
 export const couponList = (shopId, cb) => {
-    const token = getToken()
-    uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/${shopId}?pageNo=1&pageSize=10`,
-        header: {
-            'X-Access-Token': token
-        },
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniGet(`/customer/coupon/customer/${shopId}?pageNo=1&pageSize=10`, cb)
 }
 
 export const couponDetail = (couponId, cb) => {
-    const token = getToken()
-    uni.request({
-        method: 'GET',
-        url: `${apiRoot}customer/coupon/customer/coupon-user-detail/${couponId}`,
-        header: {
-            'X-Access-Token': token
-        },
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniGet(`/customer/coupon/customer/coupon-user-detail/${couponId}`, cb)
 }
 
 export const couponGet = (data, cb) => {
-    const token = getToken()
-    uni.request({
-        method: 'POST',
-        url: `${apiRoot}customer/coupon/customer/mini-program`,
-        header: {
-            'X-Access-Token': token
-        },
-        data: data,
-        success: (res) => {
-            cb(res)
-        }
-    })
+    uniPost(`/customer/coupon/customer/mini-program`, data, cb)
 }
