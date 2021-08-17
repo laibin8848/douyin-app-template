@@ -72,6 +72,10 @@ function uniPost (url, data = {}, cb = null) {
     })
 }
 
+export const getShopList = (cb) => {
+    uniGet(`/customer/shop/list?pageNo=1&pageSize=100`, cb)
+}
+
 export const couponMy = (status, cb) => {
     uniGet(`/customer/coupon/customer/my?pageNo=1&pageSize=10&status=${status}`, cb)
 }

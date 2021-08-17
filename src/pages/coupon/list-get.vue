@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<cusNav title="我的卡劵" height="240px">
+		<cusNav title="我的卡劵" height="210px">
 			<view class="user_info">
 				<view class="face_name">
 					<image class="image" mode="widthFix" :src="avatarUrl" />
@@ -19,30 +19,30 @@
 		</cusNav>
 		<view class="main_bg_con">
 			<view class="coupon_list">
-				<view style="color: #fff;font-size: 12px;text-align: center;" v-if="list.length == 0">
+				<view style="color: #fff;font-size: 14px;text-align: center;" v-if="list.length == 0">
 					暂无数据~
 				</view>
-				<view class="list_item_wrapper" v-for="(item, index) in list" :key="item.id">
+				<view class="list_item_wrapper" v-for="item in list" :key="item.id">
 					<view class="list_item" @click="goDetail(item)">
 						<view class="__item item_p color_1">
 							<text class="_big_b_font"><text class="_small_s_font">¥</text>{{item.faceValue}}</text>
 						</view>
 						<view class="__item item_d">
-							<text class="_big_font color_2">{{item.title}}</text>
-							<text class="_small_font color_1">满{{item.threshold}}减{{item.faceValue}}</text>
+							<text class="_big_font color_2" style="font-weight: bold;">{{item.title}}</text>
+							<text class="_small_font color_1" style="margin: 4px 0;">{{item.enterpriseName}}</text>
 							<text class="_small_font color_3">{{formatTime(item.endTime)}} 到期</text>
 						</view>
 						<view class="__item item_b">
 							<button :disabled="item.status != 0" :class="{'__my_btn': true,'__my_btn_narmal': item.status == 0, '__my_btn_disabled': item.status != 0}" type="primary" plain="true" size="mini">去使用</button>
 						</view>
 					</view>
-					<view class="__rule">
+					<!-- <view class="__rule">
 						<view class="__rule_title" @click="list[index].showrule = !list[index].showrule">
 							<text class="flex_1">满足以下条件可用</text>
 							<text :class="{'arrow': true, 'arrow_to_up': item.showrule, 'arrow_to_down': !item.showrule}"></text>
 						</view>
 						<view v-show="item.showrule" class="_rule_text" v-html="item.description1"></view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 		</view>
@@ -53,8 +53,10 @@
 	import cusNav from '@/components/nav.vue'
 	import { couponMy, couponStatusCount } from '@/api'
 	import moment from 'moment'
+	import setNavBar from '@/mixin/set-nav-bar'
 
 	export default {
+		mixins: [setNavBar],
 		components: {
 			cusNav
 		},
@@ -74,6 +76,7 @@
 		},
 		onLoad() {
 			const _this = this
+			// #ifdef MP-TOUTIAO
 			uni.getUserInfo({
 				success(res) {
 					console.log('getUserInfo', res)
@@ -83,9 +86,10 @@
 					}
 				}
 			})
-			this.getMyList()
+			// #endif
 		},
 		onShow() {
+			this.getMyList()
 			this.fetchStatus()
 		},
 		watch: {
@@ -112,14 +116,14 @@
 				})
 				couponMy(this.curStatus, (res)=> {
 					uni.hideLoading()
-					res.data.result.records.map(item=> item.showrule = false)
+					// res.data.result.records.map(item=> item.showrule = false)
 					this.list = res.data.result.records || []
 				})
 			},
 			goDetail(item) {
 				item.status == 0 && 
 					uni.navigateTo({
-						url: `/pages/coupon/detail?couponId=${item.id}`
+						url: `/pages/coupon/detail?couponId=${item.id}&enterpriseName=${item.enterpriseName}`
 					})
 			}
 		}
@@ -228,7 +232,8 @@
 	}
 	.item_p {
 		padding-left: 10px;
-		width: 80px;
+		min-width: 90px;
+		width: auto;
 	}
 	.item_d {
 		flex: 1;
@@ -242,10 +247,12 @@
 	}
 	._big_b_font {
 		font-size: 42px;
+		font-weight: bold;
 	}
 	._small_s_font {
 		font-size: 22px;
 		color: #666;
+		font-weight: normal;
 	}
 	._small_font {
 		font-size: 12px;

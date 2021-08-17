@@ -3,7 +3,7 @@
 		{
 			"path": "pages/home/index",
 			"style": {
-				"navigationBarTitleText": "领劵首页"
+				"navigationBarTitleText": "领券小工具"
 			}
 		},
 		{
@@ -26,12 +26,6 @@
 			}
 		},
 		{
-			"path": "pages/home/index",
-			"style": {
-				"navigationBarTitleText": "门店生活圈"
-			}
-		},
-		{
 			"path": "pages/enterprise/coupon"
 		}
 	],
@@ -44,14 +38,36 @@
 	},
 	"condition": {
 		"current": 0,
-		"list": [{
-				"name": "coupon_not_get",
+		"list": [
+			{
+				"name": "陆鼎记茶事的小店",
 				"path": "pages/home/index",
-				"query": "shopId=1&status=1"
-			},{
-				"name": "coupon_get",
+				"query": "shopId=1423230564108922881"
+			},
+			{
+				"name": "野竹林新派私房菜的小店",
 				"path": "pages/home/index",
-				"query": "shopId=1&status=2"
+				"query": "shopId=1423230923502055426"
+			},
+			{
+				"name": "云楠野菌火锅店的小店",
+				"path": "pages/home/index",
+				"query": "shopId=1423230760985358338"
+			},
+			{
+				"name": "秀田日本料理的小店",
+				"path": "pages/home/index",
+				"query": "shopId=1423231157808459777"
+			},
+			{
+				"name": "渔福海鲜码头的小店",
+				"path": "pages/home/index",
+				"query": "shopId=1423231222983749634"
+			},
+			{
+				"name": "藤野衣造型的小店",
+				"path": "pages/home/index",
+				"query": "shopId=1423231301631143938"
 			}
 		]
 	},

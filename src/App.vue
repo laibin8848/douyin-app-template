@@ -1,12 +1,18 @@
 <script>
 	import { douyinAppletsLogin } from '@/api'
+	import setNavBar from '@/mixin/set-nav-bar'
 
 	export default {
+		mixins: [setNavBar],
 		onLaunch: function(options) {
 			console.log('App Launch', options)
+			let provider = 'toutiao'
+			// #ifdef MP-WEIXIN
+			provider = 'weixin'  
+			// #endif
 
 			uni.login({
-				provider: 'toutiao',
+				provider: provider,
 				success: function(loginRes) {
 					console.log('loginRes', loginRes)
 					
@@ -15,7 +21,7 @@
 							//
 						}
 					})
-
+					// #ifdef MP-TOUTIAO
 					douyinAppletsLogin({
 						'anonymousCode': loginRes.anonymousCode,
 						'code': loginRes.code
@@ -25,6 +31,7 @@
 							data: res.data.result.token || ''
 						})
 					})
+					// #endif
 				}
 			})
 

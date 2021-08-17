@@ -6,7 +6,7 @@
 				<view class="qr_box_con">
 					<view class="title_box">
 						<text class="__main_title">{{couponObj.title || ''}}</text>
-						<text>满{{couponObj.threshold}}减{{couponObj.faceValue}}</text>
+						<text>{{enterpriseName}}</text>
 					</view>
 					<view class="sp_border">
 						<view class="_right"></view>
@@ -20,7 +20,7 @@
 				</view>
 			</view>
 			<view class="__bottom_desc">
-				<view class="_block">
+				<view class="_block" style="padding-top: 30px;">
 					<text class="__title">适用范围</text>
 					<text class="__con" style="border-bottom: 1px solid #F1F1F1;">
 						{{couponObj.description2 || ''}}
@@ -42,15 +42,18 @@
 	import QRCode from '@/common/qrcode.js'
 	import { couponDetail, couponStatus } from '@/api'
 	import moment from 'moment'
+	import setNavBar from '@/mixin/set-nav-bar'
 	let timmer = null
 
 	export default {
+		mixins: [setNavBar],
 		components: {
 			cusNav
 		},
 		data() {
 			return {
 				couponId: null,
+				enterpriseName: null,
 				couponObj: {
 					qrCode: '',
 					startTime: '',
@@ -60,6 +63,7 @@
 		},
 		onLoad(options) {
 			this.couponId = options.couponId
+			this.enterpriseName = options.enterpriseName
 			timmer = setInterval(()=> {
 				couponStatus(this.couponObj.qrCode || '', (res)=> {
 					if(res.data.success == true) {
@@ -87,7 +91,7 @@
 				title: '加载中…'
 			})
 			couponDetail(this.couponId, (res)=> {
-				uni.hideLoading()
+				setTimeout(()=> {uni.hideLoading()}, 500)
 				this.couponObj = res.data.result
 				new QRCode('myQrcode', {
 					text: this.couponObj.qrCode || '',
@@ -140,7 +144,8 @@
 	.qr_box_con .title_box .__main_title {
 		color: #ED4134;
 		font-size: 24px;
-		padding: 20px 0;
+		padding: 20px 0 6px 0;
+		font-weight: bold;
 	}
 	.qr_box_con .code_box {
 		background: #FAFAFA;
