@@ -1,4 +1,4 @@
-export const APIHOST = "https://kedoulai-dev.gdiiyy.com"
+export const APIHOST = "https://kedoulai.gdii-yueyun.com"
 // https://kedoulai-dev.gdiiyy.com
 // https://kedoulai.gdii-yueyun.com
 //https://minio.gdii-yueyun.com/open-douyin/

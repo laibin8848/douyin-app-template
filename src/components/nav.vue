@@ -51,7 +51,7 @@
 	background-size: 100% 100%;
 }
 .global_custom_nav ._title {
-	width: 100%;
+	width: calc(100%-86px);
 	color: #fff;
 	font-size: 34rpx;
 	font-weight: normal;
