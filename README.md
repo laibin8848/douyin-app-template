@@ -1,17 +1,19 @@
-# 基于VITE搭建的VUE3 B端管理后台项目骨架，整合常规模块，持续更新中。。。
+# douyin
 
-## 安装
+## Project setup
 ```
 npm install
 ```
 
-### 运行
+### Compiles and hot-reloads for development
 ```
 npm run dev
 ```
 
-### 打包
+### Compiles and minifies for production
 ```
 npm run build
 ```
 
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
