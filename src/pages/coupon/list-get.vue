@@ -24,9 +24,9 @@
 				</view>
 				<view class="list_item_wrapper" v-for="item in list" :key="item.id">
 					<view class="list_item" @click="goDetail(item)">
-						<view class="__item item_p color_1">
+						<!-- <view class="__item item_p color_1">
 							<text class="_big_b_font"><text class="_small_s_font">¥</text>{{item.faceValue}}</text>
-						</view>
+						</view> -->
 						<view class="__item item_d">
 							<text class="_big_font color_2" style="font-weight: bold;">{{item.title}}</text>
 							<text class="_small_font color_1" style="margin: 4px 0;">{{item.enterpriseName}}</text>
@@ -51,7 +51,7 @@
 
 <script>
 	import cusNav from '@/components/nav.vue'
-	import { couponMy, couponStatusCount } from '@/api'
+	import { couponMy, couponStatusCount, douyinAppletsLogin } from '@/api'
 	import moment from 'moment'
 	import setNavBar from '@/mixin/set-nav-bar'
 
@@ -75,18 +75,30 @@
 			}
 		},
 		onLoad() {
+			const anonymousCode = uni.getStorageSync('logined_anonymousCode')
+			const code = uni.getStorageSync('logined_code')
+			
 			const _this = this
-			// #ifdef MP-TOUTIAO
 			uni.getUserInfo({
 				success(res) {
 					console.log('getUserInfo', res)
 					if (res) {
 						_this.nickname = res.userInfo.nickName
 						_this.avatarUrl = res.userInfo.avatarUrl
+						douyinAppletsLogin({
+							'anonymousCode': anonymousCode,
+							'code': code,
+							'avatar': res.userInfo.avatarUrl,
+							'nickname': res.userInfo.nickName
+						},(res) => {
+							res.data.result && uni.setStorage({
+								key: 'access_token',
+								data: res.data.result.token || ''
+							})
+						})
 					}
 				}
 			})
-			// #endif
 		},
 		onShow() {
 			this.getMyList()

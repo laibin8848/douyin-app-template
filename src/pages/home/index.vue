@@ -4,13 +4,6 @@
 		<view class="main_bg_con">
 			<view class="ad_swiper_wrapper">
 				<image :src="banner" style="width: 100%;" mode="widthFix" />
-				<!-- <swiper class="swiper" circular :indicator-dots="false" :autoplay="true" :interval="2000" :duration="500">
-					<swiper-item>
-						<view class="swiper-item">
-							<image src="@/static/home/banner.png" />
-						</view>
-					</swiper-item>
-				</swiper> -->
 			</view>
 			<view class="__title">
 				<text>推荐店铺</text>
@@ -18,44 +11,35 @@
 			<view class="shop_list">
 				<template v-for="item in shopListNet">
 					<view class="shop_item" :key="item.id" v-if="item.id" @click="showDialog(item.id)">
-						<image :src="`https://minio.gdii-yueyun.com/open-douyin/${item.id}.png?${imageVer}`" style="width: 100%;" mode="widthFix" />
+						<image :src="`${imageHost}/${item.id}.png?${imageVer}`" style="width: 100%;" mode="widthFix" />
 						<view class="desc">
 							<text class="desc_inner">{{item.name}}</text>
 							<text class="desc_inner">{{item.title}}</text>
 						</view>
 					</view>
-					<view :key="item.id" class="shop_item" v-else></view>
+					<view :key="item.id" class="shop_item _empty" v-else></view>
 				</template>
-				<!-- <view class="shop_item" :key="item.id" v-for="item in shopListNet" @click="showDialog(item.id)">
-					<image :src="`https://minio.gdii-yueyun.com/open-douyin/${item.id}.png?${imageVer}`" style="width: 100%;" mode="widthFix" />
-					<view class="desc">
-						<text class="desc_inner">{{item.name}}</text>
-						<text class="desc_inner">{{item.title}}</text>
-					</view>
-				</view> -->
 			</view>
-			<!-- <view class="btn_list">
-				<view class="btn_item" :key="item.appid" v-for="item in gameList1" @click="goMiniApp(item.appid)">
-					<image :src="item.gameImg" style="width: 100%;" mode="widthFix" />
-					<view class="desc">
-						<text>{{item.name}}</text>
-						<text class="_font_small">{{item.users}} 人在玩</text>
+			<popup ref="popuplist">
+				<view class="popup_coupon_list">
+				<image class="coupon_list_close" src="@/static/confirmbox/icon_close.png" @click="$refs.popuplist.close()" style="width:34px;" mode="widthFix" />					
+				<scroll-view style="height: 500px;" scroll-y="true">
+					<view class="list_item" :key="item.code" v-for="item in scanEnterList">
+						<!-- <view class="list_item_l">
+							<text style="font-size: 36px;font-weight: bold;"><text style="font-size: 18px;">¥</text>{{item.faceValue}}</text>
+						</view> -->
+						<view class="list_item_r">
+							<text style="font-size: 14px;font-weight: bold;">{{item.title}}</text>
+							<text style="color: #FF522A;">{{item.enterpriseName || '-'}}</text>
+							<text>有效期至{{formatTime(item.endTime)}}</text>
+						</view>
+						<view class="list_item_b">
+							<button @click="doUseCoupon(item.code)" class="__my_btn" type="primary" plain="true" size="mini">使用</button>
+						</view>
 					</view>
+				</scroll-view>
 				</view>
-			</view>
-			<view class="banner2">
-				<image src="@/static/home/banner2.png" style="width: 100%;" mode="widthFix" />
-				<view class="btn" @click="openDialog">立即领取</view>
-			</view>
-			<view class="btn_list">
-				<view class="btn_item" :key="item.appid" v-for="item in gameList2" @click="goMiniApp(item.appid)">
-					<image :src="item.gameImg" style="width: 100%;" mode="widthFix" />
-					<view class="desc">
-						<text>{{item.name}}</text>
-						<text class="_font_small">{{item.users}} 人在玩</text>
-					</view>
-				</view>
-			</view> -->
+			</popup>
 			<popup ref="popup">
 				<view class="confirm_con">
 					<image src="@/static/confirmbox/get.png" style="width: 345px;" mode="widthFix" />
@@ -66,12 +50,12 @@
 							<image src="@/static/confirmbox/icon_colck.png" style="width: 18px;vertical-align:middle;margin: -6px 6px 0 0;" mode="widthFix" />
 							<text>{{topCoupon.title}}</text>
 						</view>
-						<view class="__price">
+						<!-- <view class="__price">
 							<text style="font-size: 40px;"><text style="font-size: 16px;">¥</text>{{topCoupon.faceValue}}</text>
 						</view>
 						<view class="__tips" style="margin-top: 0;">
 							<text>满{{topCoupon.threshold}}减{{topCoupon.faceValue}}</text>
-						</view>
+						</view> -->
 						<view class="__get" @click="getCoupon">
 						</view>
 					</view>
@@ -84,7 +68,7 @@
 <script>
 	import popup from '@/components/popup.vue'
 	import cusNav from '@/components/nav.vue'
-	import { couponList, couponGet, shopDetail, getShopList } from '@/api'
+	import { couponList, couponGet, shopDetail, getShopList, useCouponList, useCoupon } from '@/api'
 	import { IMGHOST as imageHost, IMGVER as imageVer } from '@/config'
 
 	export default {
@@ -94,133 +78,77 @@
 		},
 		data() {
 			return {
+				action: '',
+				imageHost,
 				imageVer: imageVer,
 				banner: `${imageHost}/banner.png?${imageVer}`,
 				shopname: '',
-				shopId: "1423230564108922881",
+				shopId: "1",
 				topCoupon: null,
-				// shopListNet: [],
 				shopListNet: [
 					{
-						id: '1423230564108922881',
-						name: "鹿鼎记茶事",
-						title: "我一定会再来一杯"
+						id: '1',
+						name: "",
+						title: "加载中……"
 					},
 					{
-						id: '1423230760985358338',
-						name: '云楠野菌火锅店',
-						title: "定位在北滘，超级好吃！"
+						id: '1',
+						name: '',
+						title: "加载中……"
 					},
 					{
-						id: '1423231222983749634',
-						name: '渔福海鲜码头',
-						title: "超鲜大只无敌优惠"
+						id: '1',
+						name: '',
+						title: "加载中……"
 					},
 					{
-						id: '1423230923502055426',
-						name: '野竹林新派私房菜',
-						title: "老字号，点评过万"
-					},
-					{
-						id: '1423231301631143938',
-						name: '藤野衣造型',
-						title: "服务很好，造型很亮"
-					},
-					{
-						id: '1423231157808459777',
-						name: '秀田日本料理',
-						title: "超美味，值得品尝"
+						id: '1',
+						name: '',
+						title: "加载中……"
 					}
 				],
-				gameList1: [
-					{
-						appid: 'tt2dfc5b41b2d618ae',
-						name: '勇者历险记',
-						users: 106,
-						gameImg: `${imageHost}/game2.png?${imageVer}`
-					},
-					{
-						appid: 'tt95d6e36b0afcf314',
-						name: '水枪奇兵',
-						users: 200,
-						gameImg: `${imageHost}/game6.png?${imageVer}`
-					},
-					{
-						appid: 'tt65e7135afacd0320',
-						name: '摩托车狂飙',
-						users: 600,
-						gameImg: `${imageHost}/game4.png?${imageVer}`
-					}
-				],
-				gameList2: [
-					{
-						appid: 'tte9589fe57672f68b',
-						name: '我太难了',
-						users: 1000,
-						gameImg: `${imageHost}/game5.png?${imageVer}`
-					},
-					{
-						appid: 'tt2a5d5ce0b577716b',
-						name: '斗兽棋123',
-						users: 880,
-						gameImg: `${imageHost}/game3.png?${imageVer}`
-					},
-					{
-						appid: 'tt33a94514ac83c9e2',
-						name: '贪吃蛇',
-						users: 690,
-						gameImg: `${imageHost}/game1.png?${imageVer}`
-					}
-				]
+				scanEnterList: [],
+				timer: null
 			}
-		},
-		onShow() {
-			// this.gameList.map(item => item.users++)
 		},
 		onLoad(options) {
-			if(options.shopId) {
-				this.shopId = options.shopId
-			}
+			const _this = this
+			setTimeout(()=> {
+				options.action == 'useCoupon' && useCouponList({ shopId: this.shopId, status: 0 }, (res)=> {
+					if(res.data.code == 'E000') {
+						this.scanEnterList = res.data.result || []
+						if(this.scanEnterList.length == 0) {
+							uni.showToast({
+								title: '无可用优惠劵',
+								duration: 2000
+							})
+						} else {
+							_this.$refs.popuplist.open()
+						}
+					} else {
+						uni.showToast({
+							title: '无可用优惠劵',
+							duration: 2000
+						})
+					}
+				})
+			}, 2000)
 			getShopList((res)=> {
-				this.shopListNet = res.data.result.records || []
-				if(this.shopListNet.length%2 > 0) {
-					this.shopListNet.push({
+				_this.shopListNet = res.data.result.records || []
+				if(_this.shopListNet.length%2 > 0) {
+					_this.shopListNet.push({
 						id: ''
 					})
 				}
 			})
-			// uni.showLoading({
-			// 	title: '加载中…'
-			// })
-			// if(options.status == 2) {
-			// 	uni.redirectTo({
-			// 		url: `/pages/enterprise/coupon?shopname=${this.shopname}`
-			// 	})
-			// }
-		},
-		mounted() {
-			// shopDetail(this.shopId, (res)=> {
-			// 	if(res.data.success == true) {
-			// 		this.shopname = res.data.result.result.name
-			// 	}
-			// })
-			// couponList(this.shopId,(res) => {
-			// 	if(res.data.success == true) {
-			// 		if(res.data.result == null) {
-			// 			uni.hideLoading()
-			// 			return
-			// 		}
-			// 		this.topCoupon = res.data.result
-					
-			// 		const popupFlag = uni.getStorageSync('show_coupon_popup')
-			// 		setTimeout(()=> {
-			// 			uni.hideLoading()
-			// 			!popupFlag && this.$refs.popup.open()
-			// 		}, 1000)
-			// 	}
-			// })
+			if(options.shopId) {
+				this.shopId = options.shopId
+			}
 		},
 		methods: {
+			formatTime(time) {
+				return time.split(' ')[0]
+			},
 			openDialog() {
 				if(this.topCoupon) {
 					this.$refs.popup.open()
@@ -285,6 +213,31 @@
 						}
 					})
 				})
+			},
+			doUseCoupon(code) {
+				const _this = this
+				uni.showModal({
+					title: '提示',
+					content: '确定核销该优惠劵',
+					success: function (res) {
+						if (res.confirm) {
+							useCoupon({code}, res=> {
+								if(res.data.code == 'E000') {
+									uni.showToast({
+										title: '消劵成功！',
+										duration: 2000
+									})
+									_this.$refs.popuplist.close()
+								} else {
+									uni.showToast({
+										title: res.data.message,
+										duration: 2000
+									})
+								}
+							})
+						}
+					}
+				})
 			}
 		}
 	}
@@ -310,7 +263,11 @@
 	margin-bottom: 10px;
 	position: relative;
 	font-size: 14px;
+	background: #fafafa;
+	border-radius:4px;
+	position: relative;
  }
+ ._empty { background: none !important; }
 .shop_item image {
 	border-top-right-radius:4px;
     border-top-left-radius:4px;
@@ -321,15 +278,17 @@
 	bottom: -20px; */
 	width: 100%;
 	height: auto;
-	background: #ffffff;
+	background: #fafafa;
 	border-bottom-right-radius:4px;
     border-bottom-left-radius:4px;
 	display: flex;
 	flex-direction: column;
 	padding: 14px 0 10px 0;
-	margin-top: -10px;
+	/* margin-top: -10px; */
 	font-size: 12px;
 	color: #333;
+	position:absolute;
+	bottom: 0;
 }
 .shop_item .desc_inner {
 	text-indent: 10px;
@@ -417,10 +376,10 @@
 	position: absolute;
 	width: 100%;
 	height: 20px;
-	top: 80px;
+	top: 120px;
 	left: 0;
 	color: #FF3748;
-	font-size: 12px;
+	font-size: 16px;
 }
 ._confirm_main .__tips {
 	height: 28px;
@@ -435,8 +394,77 @@
 ._confirm_main .__get {
 	width: 100%;
 	height: 58px;
-	top: 150px;
+	top: 110px;
 	left: 0;
 	position:absolute;
+}
+.popup_coupon_list {
+	width: 90%;
+	height: auto;
+	background: #fffafa;
+	margin: 50px auto 0 auto;
+	border: 1px #FF5830 solid;
+	border-radius: 10px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 10px;
+}
+.popup_coupon_list .list_item {
+	width: 88%;
+	background: #FFFFFF;
+	box-shadow: 4px 0 8px 0 rgba(0,0,0,0.10);
+	margin: 10px auto 0 auto;
+	border-radius: 10px;
+	align-items: center;
+	display: flex;
+	font-size: 12px;
+	padding: 10px;
+}
+.popup_coupon_list .list_item .list_item_l{
+	color: #FF522A;
+	width: 100px;
+	overflow: hidden;
+}
+.popup_coupon_list .list_item .list_item_r {
+	display: flex;
+	flex-direction: column;
+	line-height: 22px;
+	text-align: left;
+	flex: 1;
+	padding-left: 6px;
+	/* border-left: 1px #E5E5E5 dashed; */
+	position: relative;
+}
+/* .popup_coupon_list .list_item .list_item_r::after {
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background: #fffafa;
+	position: absolute;
+	top: -20px;
+	left: -10px;
+	content: '';
+	display: block;
+}
+.popup_coupon_list .list_item .list_item_r::before {
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	background: #fffafa;
+	position: absolute;
+	bottom: -20px;
+	left: -10px;
+	content: '';
+	display: block;
+} */
+.coupon_list_close {
+	top: -16px;
+	right: -12px;
+	position: absolute;
+}
+.__my_btn {
+	border-radius: 4px;
+	background-image: linear-gradient(270deg, #FF557A 0%, #FF5828 100%);
 }
 </style>

@@ -14,22 +14,8 @@ function uniGet (url, cb = null) {
             console.log('uni-get-result', res.data)
             if(res.data.code == 'E401') {
                 uni.hideLoading()
-                uni.login({
-                    provider: 'toutiao',
-                    success: function(loginRes) {
-                        douyinAppletsLogin({
-                            'anonymousCode': loginRes.anonymousCode,
-                            'code': loginRes.code
-                        },(res) => {
-                            uni.setStorage({
-                                key: 'access_token',
-                                data: res.data.result.token || ''
-                            })
-                            uni.reLaunch({
-                                url: '/pages/home/index'
-                            })
-                        })
-                    }
+                uni.reLaunch({
+                    url: '/pages/home/index'
                 })
                 return
             }
@@ -89,7 +75,9 @@ export const shopDetail = (shopId, cb) => {
 }
 
 export const douyinAppletsLogin = (data, cb) => {
-    uniGet(`/customer/login/douyinAppletsLogin?anonymousCode=${data.anonymousCode}&code=${data.code}`, cb)
+    data.avatar = data.avatar || ''
+    data.nickname = data.nickname || ''
+    uniGet(`/customer/login/douyinAppletsLogin?anonymousCode=${data.anonymousCode}&code=${data.code}&avatar=${encodeURIComponent(data.avatar)}&nickname=${encodeURIComponent(data.nickname)}`, cb)
 }
 
 export const couponStatusCount = async () => {
@@ -128,4 +116,12 @@ export const couponDetail = (couponId, cb) => {
 
 export const couponGet = (data, cb) => {
     uniPost(`/customer/coupon/customer/mini-program`, data, cb)
+}
+
+export const useCouponList = (data, cb) => {
+    uniPost('/customer/coupon/customer/myCouponList', data, cb)
+}
+
+export const useCoupon = (data, cb) => {
+    uniPost('/customer/coupon/customer/useCoupon', data, cb)
 }

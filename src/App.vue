@@ -1,65 +1,36 @@
+<template>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+</template>
+
 <script>
-	import { douyinAppletsLogin } from '@/api'
-	import setNavBar from '@/mixin/set-nav-bar'
+import { defineComponent } from 'vue'
+import { useStore } from '@/store/index'
 
-	export default {
-		mixins: [setNavBar],
-		onLaunch: function(options) {
-			console.log('App Launch', options)
-			let provider = 'toutiao'
-			// #ifdef MP-WEIXIN
-			provider = 'weixin'  
-			// #endif
+export default defineComponent({
+  name: 'App',
+  setup() {
+    const store = useStore()
 
-			uni.getSetting({
-				success(res) {
-					if(!res.authSetting['scope.userInfo']) {
-						uni.showModal({
-							title: '提示',
-							content: '应用将请求获取您的头像及昵称，仅限于展示作用。',
-							success: function (res) {
-								if (res.confirm) {
-									uni.login({
-										provider: provider,
-										success: function(loginRes) {
-											console.log('loginRes', loginRes)
-											
-											uni.getUserInfo({
-												success(res) {
-													//
-												}
-											})
-											// #ifdef MP-TOUTIAO
-											douyinAppletsLogin({
-												'anonymousCode': loginRes.anonymousCode,
-												'code': loginRes.code
-											},(res) => {
-												uni.setStorage({
-													key: 'access_token',
-													data: res.data.result.token || ''
-												})
-											})
-											// #endif
-										}
-									})
-								}
-							}
-						})
-					}
-				}
-			})
-
-
-			//clear flag
-			uni.setStorage({
-				key: 'show_coupon_popup',
-				data: ''
-			})
-		}
-	}
+    const resizeHeight = () => {
+      const { clientHeight } = document.body // 获取文档可视区域的宽度
+      const height = Math.max(600, clientHeight - 170) // 保证最小值大于600
+      store.commit('settingsModule/setTableHeight', height) // 设置tableHeight
+    }
+    resizeHeight()
+    return {
+    }
+  }
+})
 </script>
 
 <style>
-	/*每个页面公共css */
-	@import './common/uni.css';
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 </style>
